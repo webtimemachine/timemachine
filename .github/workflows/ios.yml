@@ -41,15 +41,16 @@ jobs:
 
       - name: Archive the iOS App
         run: |
-          xcodebuild archive -scheme "Web Time Machine (iOS)" -sdk iphoneos -configuration AppStoreDistribution archive -archivePath $PWD/build/Web\ Time\ Machine.xcarchive
+          xcodebuild archive -scheme "Web Time Machine (iOS)" -sdk iphoneos -configuration AppStoreDistribution archive -archivePath "$PWD/build/Web Time Machine.xcarchive"
+
       
       - name: Export the .ipa File
         run: |
-          xcodebuild -exportArchive -archivePath $PWD/build/Web\ Time\ Machine.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $PWD/build
+          xcodebuild -exportArchive -archivePath $PWD/build/Web Time Machine.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $PWD/build
       
       - name: Upload .ipa as an Artifact
         uses: actions/upload-artifact@v2
         with:
           name: app-ipa
-          path: build/Web\ Time\ Machine.ipa
+          path: build/Web Time Machine.ipa
       
