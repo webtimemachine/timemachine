@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Safari Extension for Testing
         run: |
-          xcodebuild build-for-testing -scheme "Web Time Machine (iOS)" -sdk iphonesimulator -derivedDataPath './build'
+          xcodebuild build-for-testing -scheme "Web Time Machine (iOS)" -sdk iphonesimulator -derivedDataPath './build' -allowProvisioningUpdates
 
       - name: Test Safari Extension
         run: |
@@ -41,7 +41,7 @@ jobs:
 
       - name: Archive the iOS App
         run: |
-          xcodebuild archive -scheme "Web Time Machine (iOS)" -sdk iphoneos -configuration AppStoreDistribution archive -archivePath "$PWD/build/Web Time Machine.xcarchive"
+          xcodebuild archive -scheme "Web Time Machine (iOS)" -sdk iphoneos -configuration AppStoreDistribution archive -archivePath "$PWD/build/Web Time Machine.xcarchive" -allowProvisioningUpdates
 
       
       - name: Export the .ipa File
