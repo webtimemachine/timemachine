@@ -20,6 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Run Fastlane Match
+        run: fastlane match development --readonly --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }}
+
       - name: List all schemes
         run: xcodebuild -list
 
