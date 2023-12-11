@@ -24,7 +24,7 @@ jobs:
         run: gem install fastlane
 
       - name: Run Fastlane Match
-        run: fastlane match development --readonly --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }}
+        run: fastlane match development --readonly --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
 
       - name: List all schemes
         run: xcodebuild -list
