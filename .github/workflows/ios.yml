@@ -25,6 +25,8 @@ jobs:
 
       - name: Run Fastlane Match
         run: fastlane match development --readonly --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
       - name: List all schemes
         run: xcodebuild -list
