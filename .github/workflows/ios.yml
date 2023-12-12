@@ -24,7 +24,7 @@ jobs:
         run: gem install fastlane
 
       - name: Run Fastlane Match
-        run: fastlane match development --readonly --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
+        run: fastlane match development --readonly --app_identifier "com.yourCompany.Web-Time-Machine" --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
