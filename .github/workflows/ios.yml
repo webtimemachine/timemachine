@@ -96,4 +96,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app-ipa
-          path: "$PWD/build/Web Time Machine.ipa"
+          path: "Web Time Machine/build/Web Time Machine.ipa"
