@@ -1,4 +1,4 @@
-name: Release Workflow
+name: iOS Build, Test, and Release Workflow
 
 on:
   push:
@@ -6,8 +6,11 @@ on:
       - 'v*.*.*'
 
 jobs:
-  create-release:
+  build-test-and-release:
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: 'Web Time Machine'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
