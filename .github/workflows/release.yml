@@ -12,16 +12,81 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download .ipa Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: app-ipa
-          path: build
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Run Fastlane Match
+        run: fastlane match development --readonly --app_identifier "com.yourCompany.Web-Time-Machine" --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+      - name: Run Fastlane Match (Extension
+        run: fastlane match development --readonly --app_identifier "com.yourCompany.Web-Time-Machine.Extension" --git_basic_authorization ${{ secrets.GIT_AUTHORIZATION }} --git_url "https://github.com/eefh/certificates.git"
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          
+
+      - name: Install Dependencies
+        run: brew install coreutils
+
+      - name: Decode and Install Apple Provisioning Profiles and Certificate
+        run: |
+          echo "${{ secrets.ENCODED_CERTIFICATE }}" | base64 --decode --output cert.p12
+          echo "${{ secrets.ENCODED_PROVISIONING_PROFILE_APP }}" | base64 --decode --output app.mobileprovision
+          echo "${{ secrets.ENCODED_PROVISIONING_PROFILE_EXTENSION }}" | base64 --decode --output extension.mobileprovision
+      
+          KEYCHAIN_PATH=$RUNNER_TEMP/my_temporary.keychain
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" $KEYCHAIN_PATH
+          security import cert.p12 -P "${{ secrets.P12_PASSWORD }}" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychains -d user -s $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${{ secrets.KEYCHAIN_PASSWORD }}" $KEYCHAIN_PATH
+      
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp app.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp extension.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+        env:
+          ENCODED_CERTIFICATE: ${{ secrets.ENCODED_CERTIFICATE }}
+          ENCODED_PROVISIONING_PROFILE_APP: ${{ secrets.ENCODED_PROVISIONING_PROFILE_APP }}
+          ENCODED_PROVISIONING_PROFILE_EXTENSION: ${{ secrets.ENCODED_PROVISIONING_PROFILE_EXTENSION }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      - name: List all schemes
+        run: xcodebuild -list
+
+      - name: Build Safari Extension for Testing
+        run: |
+          xcodebuild build-for-testing -scheme "Web Time Machine (iOS)" -sdk iphonesimulator -derivedDataPath './build' -allowProvisioningUpdates
+
+      - name: Test Safari Extension
+        run: |
+            if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then
+              filetype_parameter="workspace"
+              file_to_build="`ls -A | grep -i \\.xcworkspace\$`"
+            else
+              filetype_parameter="project"
+              file_to_build="`ls -A | grep -i \\.xcodeproj\$`"
+            fi
+            file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+            xcodebuild test-without-building -scheme "Web Time Machine (iOS)" -"$filetype_parameter" "$file_to_build" -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' -derivedDataPath './build'
+
+      - name: Archive the iOS App
+        run: |
+          xcodebuild archive -scheme "Web Time Machine (iOS)" -sdk iphoneos -configuration AppStoreDistribution archive -archivePath "$PWD/build/Web Time Machine.xcarchive" -allowProvisioningUpdates
+
+      - name: Export the .ipa File
+        run: |
+          xcodebuild -exportArchive -archivePath "$PWD/build/Web Time Machine.xcarchive" -exportOptionsPlist "$PWD/ExportOptions.plist" -exportPath "$PWD/build"
+
+      - name: List files in the build directory
+        run: ls -la "$PWD/build"
 
       - name: Extract Tag Name
         id: get_tag_name
         run: echo "::set-output name=TAG_NAME::$(echo ${GITHUB_REF#refs/tags/})"
-        
+
       - name: Create Release
         uses: actions/create-release@v1
         env:
