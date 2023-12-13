@@ -87,7 +87,7 @@ jobs:
       
       - name: Export the .ipa File
         run: |
-          xcodebuild -exportArchive -archivePath "$PWD/build/Web Time Machine.xcarchive" -exportOptionsPlist "$PWD/Web Time Machine/ExportOptions.plist" -exportPath "$PWD/build"
+          xcodebuild -exportArchive -archivePath "$PWD/build/Web Time Machine.xcarchive" -exportOptionsPlist "$PWD/ExportOptions.plist" -exportPath "$PWD/build"
         
       
       - name: Upload .ipa as an Artifact
