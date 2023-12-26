@@ -15,10 +15,9 @@ We will start with a simple backend which stores the browser history that the cl
 ![Web Time Machine on Safari](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzd3ZjZ5aWRqcWdoeXF1dDh2Z3QxenJtdnRvbGFlenJ6bDdnZGptZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hcA3Wwo91TXCY1UB7z/giphy.gif)
 
 
-### TODO
+### Future Versions
 - [ ] LLM the web time machine
 - [ ] Add a crawler to the LLM to get more context
-- [ ] chrome extension to send
 - [ ] firefox
 - [ ] ability to update in browser history
 - [ ] expiration
